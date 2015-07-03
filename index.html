@@ -1,0 +1,321 @@
+<!--<!DOCTYPE html>-->
+<html>
+<head>
+<!--Initializing Stuff-->
+<meta charset='utf-8' />
+<link rel='stylesheet' href='../lib/cupertino/jquery-ui.min.css' />
+<link href='../fullcalendar.css' rel='stylesheet' />
+<link href='../fullcalendar.print.css' rel='stylesheet' media='print' />
+<script src='../lib/moment.min.js'></script>
+<script src='../lib/jquery.min.js'></script>
+<script src='../fullcalendar.min.js'></script>
+<!--<script src='firebaseTest.js'></script>-->
+    
+<script src="https://cdn.firebase.com/js/client/2.0.4/firebase.js"></script>
+<!--<script>var myFirebaseRef = new Firebase("https://crackling-fire-1447.firebaseio.com/");</script>-->
+<script>var ref = new Firebase("https://crackling-fire-1447.firebaseio.com/trips");</script>
+<!--<script>var calendar_url = new Firebase("https://crackling-fire-1447.firebaseio.com/");</script>-->
+    
+<script src='../lib/dateFormat.js'></script>
+
+<!--------------------------------------Line-Break--------------------------------------------------------------------------------------->
+    
+   
+<script>
+console.log('Hello')
+//var ref = new Firebase("https://crackling-fire-1447.firebaseio.com/trips");
+////    console.log('Hi '+ref)
+//ref.on('value', function(snapshot){
+//    var newTrip = snapshot.val();
+//    if (newTrip == 'Do not delete'){
+//        return;
+//    }
+//    console.log('Hi '+ref)
+//    console.log('got data')
+//    console.log(newTrip)
+    
+//// Create a callback to handle the result of the authentication
+//function authHandler(error, authData) {
+//  if (error) {
+//    console.log("Login Failed!", error);
+//  } else {
+//    console.log("Authenticated successfully with payload:", authData);
+//  }
+//}
+
+// Or with an email/password combination
+var ref = new Firebase("https://crackling-fire-1447.firebaseio.com/trips");
+ref.authWithPassword({
+email    : 'dlucas@international-alert.org',
+password : '1'
+}, authHandler);
+
+//ref.child('trips').on('child_added', function(snapshot){
+//    var newTrip = snapshot.val();
+//    console.log(newTrip)
+//});
+    
+
+// console.log('Hi '+ref)
+function buildCalendar(){
+    var ref = new Firebase("https://crackling-fire-1447.firebaseio.com/trips");
+ref.on('child_added', function(snapshot){
+    var newTrip = snapshot.val();
+    if (newTrip == 'Do not delete'){
+        return;
+    }
+//    console.log('Hi '+ref)
+//    console.log('got data')
+    console.log(newTrip)
+    
+//// Create a callback to handle the result of the authentication
+//function authHandler(error, authData) {
+//  if (error) {
+//    console.log("Login Failed!", error);
+//  } else {
+//    console.log("Authenticated successfully with payload:", authData);
+//  }
+//}
+
+//--------------------------------------Line-Break---------------------------------------------------------------------------------------
+    
+    
+//This sets up an empty array that will be filled with the data pulled from Firebase    
+var count = 0;
+var triggered = false;
+var trip = [];
+var myText = "";
+//var newTrip = snapshot.val();
+
+//This collect the individual values from Firebase       
+trip[count] = new Array();
+trip[count][1] = newTrip.destination;
+trip[count][2] = newTrip.leave;
+trip[count][3] = newTrip.back;
+trip[count][4] = snapshot.key();
+trip[count][5] = newTrip.contact;
+trip[count][6] = newTrip.name +" " + newTrip.lastname;
+     console.log(trip[count][2])
+     
+//This creates a dynamic HTML form. Firebase doesn't like it when you try to call values from inside the body of the HTML (we don't know why)
+//myText += "<form value='displayTrip("+count+")' id='trips'><b>Name: </b>" + trip[count][6] + "<br><b>Destination: </b>" + trip[count][1] + "<br><b>Contact: </b>" + trip[count][5] + "<br><b>Departing: </b>" + trip[count][2] + "<br><b>Returning: </b>" + trip[count][3] + "</button>";
+
+//    This block of code re-formats the date into a format that the calendar understands, i.e. the American format (...ugh)
+    var newEvent = new Object();
+    console.log('adding calendar')
+    console.log(trip[count][6])
+    newEvent.title = trip[count][6];
+    newEvent.start = parseDMY(trip[count][2]).toYMD();
+    newEvent.end = parseDMY(trip[count][3]).toYMD();
+    newEvent.allDay = true;
+    
+    console.log(trip[count][2]);
+    console.log(parseDMY(trip[count][2]));
+    $('#calendar').fullCalendar( 'renderEvent', newEvent, true );
+    console.log(parseDMY(trip[count][2]).toYMD());
+    
+    count = count + 1;
+    
+//if(count>6 && triggered == false) {
+//    triggered = true;
+//    myText = '<form name="back" action="main.html"></form><br>' + myText;
+    
+//}
+//    console.log(myText);
+//document.getElementById("trip").innerHTML = myText;    
+});
+};
+// Create a callback to handle the result of the authentication
+function authHandler(error, authData) {
+  if (error) {
+    console.log("Login Failed!", error);
+  } else {
+    console.log("Authenticated successfully with payload:");
+      buildCalendar();
+  }
+}
+
+//// Register the callback to be fired every time auth state changes
+//var ref = new Firebase("https://crackling-fire-1447.firebaseio.com/");
+//ref.onAuth(authData);
+//console.log(ref);
+    
+// Get a reference to our posts
+var ref = new Firebase("https://crackling-fire-1447.firebaseio.com/contacts/");
+    
+// Attach an asynchronous callback to read the data at our posts reference
+ref.orderByChild("email").equalTo('dlucas@international-alert.org').on("child_added", function(snapshot) {
+var userid = snapshot.val();
+    console.log(userid);
+uName = userid.name;
+uLastname = userid.lastname;
+sessionStorage.setItem("name", uName);
+sessionStorage.setItem("lastname", uLastname);
+document.getElementById("welcome").innerHTML = "Welcome " + uName;
+    console.log(uName);
+});
+    
+</script>
+    
+    
+    
+<script>
+
+	function reload_calendar(){
+    $(document).ready(function() {
+//this initializes the calendar
+		
+        $('#calendar').fullCalendar({
+			theme: true,
+			header: {
+				left: 'prev,next today',
+				center: 'title',
+				right: 'month,agendaWeek,agendaDay'
+			},
+			defaultDate: '2015-07-12',
+//            selectable: true,
+//            selectHelper: true,
+			editable: true,
+			eventLimit: true, // allow "more" link when too many events
+
+		});
+		
+	})
+            }
+      reload_calendar();
+		
+</script>
+    
+<!--------------------------------------Line-Break--------------------------------------------------------------------------------------->
+<!--
+I'm bored so here's a Dalek:
+                   ____
+                 /  @   \==]|[=(]       E X T E R M I N A T E ! !
+                |--------|
+                ==========       .  *                                     *
+                ==========     .\ * . *.   *                         .    * \  .
+               ||||||||||||      \ * ./  *    .   *                      .  \ \
+              |||||||||| --]%%%%%% .- =--=---=-=-=-=--=-=--=-==-----=-=-=-=-=-=
+              [=========\  ]===========(  *                             . /  /
+             [==============|   / *  \    .                          *  *   /  .
+             C| @ @ @ @ @ @ D         *      *                        *
+              |              \           .                          *  *
+            C| @  @ @  @ @ @  D       .
+             |                 \          *                          *
+           C| @  @  @  @  @  @  D
+            |                    \ 
+          C| @  @  @   @   @   @  D
+           |                       \
+          |@@@@@@@@@@@@@@@@@@@@@@@@@|
+           -------------------------  
+-->
+<!--------------------------------------Line-Break--------------------------------------------------------------------------------------->
+<style>
+
+	body {
+		margin: 40px 10px;
+		padding: 0;
+		font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+		font-size: 14px;
+	}
+
+	#calendar {
+		max-width: 900px;
+		margin: 0 auto;
+	}
+
+</style>
+    <script>
+//        This allows the add trip button to create a new event
+            function newEvent() {
+            var newTrip = new Object();
+                console.log('Im Here!')
+
+            newTrip.title = "some text";
+            newTrip.start = '2015-02-22';
+            newTrip.allDay = false;
+            $('#calendar').fullCalendar( 'renderEvent', newTrip );
+                console.log(newTrip);
+            };
+        
+
+        </script>
+<script>
+    
+function newTripEvent() {
+//create a form
+var f = document.createElement("form");
+f.setAttribute('method',"post");
+f.setAttribute('action',"submit.php");
+
+//create a contact drop-down
+var i = document.createElement("select");
+i.type = "select";
+i.name = "contact_name";
+i.id = "user_name1";
+i.options.add( new Option("Please Select One") );
+i.options.add( new Option(newTrip.contact) );
+
+//create an event type drop-down
+var d = document.createElement("select");
+d.type = "select";
+d.id = "holiday";
+d.name = "holiday";
+d.options.add( new Option("Please Select One") );
+d.options.add( new Option("Holiday") );
+d.options.add( new Option("Maternity") );
+d.options.add( new Option("Meeting") );
+
+
+//create a button
+var s = document.createElement("input");
+s.type = "submit";
+s.value = "Submit";
+    
+//create a reset button
+var r = document.createElement("input");
+r.type = "reset";
+r.value = "reset";
+
+// add all elements to the form
+f.appendChild(i);
+f.appendChild(d);
+f.appendChild(s);
+f.appendChild(r);
+
+// add the form inside the body
+$("#addTripPlaceholder").append(f);   //using jQuery or
+document.getElementsByTagName('button')[0]; //pure javascript
+};
+</script>
+<style>
+    form select option {
+    color: #080808;
+    }
+    form select option:first-child {
+    color: #808080;
+    }
+</style>
+
+</head>
+    
+<!--------------------------------------Line-Break--------------------------------------------------------------------------------------->
+    
+<body>
+<h1 id="welcome"></h1>
+<!--
+    <select>
+        <option value="holiday" id="holiday">Holiday</option>
+        <option value="maternity" id="maternity">Maternity Leave</option>
+        <option value="meeting" id="meeting">Meeting</option>
+        <option value="business_trip" id="business_trip">Trip</option>
+        <option value="working_from_home" id="workign_from_home">Working From Home</option>
+    </select>
+-->
+	<div id='calendar'></div>
+<!--    add trip button-->
+<input class="btn btn-default btn-block" value="Add New Trip" type="submit" id="button" onClick='newTripEvent()'/>
+<div id="addTripPlaceholder"></div>
+
+</body>
+</html>
