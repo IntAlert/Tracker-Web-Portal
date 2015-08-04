@@ -1,15 +1,21 @@
 <!--<!DOCTYPE html>-->
 <html>
 <head>
+    
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+  <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+  <link rel="stylesheet" href="/resources/demos/style.css">  
+    
 <!--Initializing Stuff-->
 <meta charset='utf-8' />
 <link rel='stylesheet' href='../lib/cupertino/jquery-ui.min.css' />
 <link href='../fullcalendar.css' rel='stylesheet' />
 <link href='../fullcalendar.print.css' rel='stylesheet' media='print' />
 <script src='../lib/moment.min.js'></script>
-<script src='../lib/jquery.min.js'></script>
 <script src='../fullcalendar.min.js'></script>
-<!--<script src='firebaseTest.js'></script>-->
+    
+
     
 <script src="https://cdn.firebase.com/js/client/2.0.4/firebase.js"></script>
 <!--<script>var myFirebaseRef = new Firebase("https://crackling-fire-1447.firebaseio.com/");</script>-->
@@ -93,7 +99,7 @@ trip[count][1] = newTrip.destination;
 trip[count][2] = newTrip.leave;
 trip[count][3] = newTrip.back;
 trip[count][4] = snapshot.key();
-trip[count][5] = newTrip.contact;
+trip[count][5] = newTrip.contactlastname;
 trip[count][6] = newTrip.name +" " + newTrip.lastname;
      console.log(trip[count][2])
      
@@ -108,6 +114,10 @@ trip[count][6] = newTrip.name +" " + newTrip.lastname;
     newEvent.start = parseDMY(trip[count][2]).toYMD();
     newEvent.end = parseDMY(trip[count][3]).toYMD();
     newEvent.allDay = true;
+    newEvent.description = trip[count][1];
+    newEvent.contact = trip[count][5];
+    newEvent.newstart = trip[count][2];
+    newEvent.newend = trip[count][3];
     
     console.log(trip[count][2]);
     console.log(parseDMY(trip[count][2]));
@@ -155,15 +165,78 @@ document.getElementById("welcome").innerHTML = "Welcome " + uName;
     console.log(uName);
 });
     
-</script>
-    
-    
-    
-<script>
+function ShowCustomDialog() {
 
-	function reload_calendar(){
+    ShowDialogBox('Trip Information', 'Record updated successfully.', 'Ok', '', 'GoToAssetList', null);
+}
+
+function ShowDialogBox(title, content, btn1text, btn2text, functionText, parameterList) {
+    var btn1css;
+    var btn2css;
+
+    if (btn1text == '') {
+        btn1css = "hidecss";
+    } else {
+        btn1css = "showcss";
+    }
+
+    if (btn2text == '') {
+        btn2css = "hidecss";
+    } else {
+        btn2css = "showcss";
+    }
+    $("#lblMessage").html(content);
+
+    $("#dialog").dialog({
+        resizable: false,
+        title: title,
+        modal: true,
+        width: '400px',
+        height: 'auto',
+        bgiframe: false,
+        hide: {
+            effect: 'scale',
+            duration: 400
+        },
+
+        buttons: [{
+            text: btn1text,
+                "class": btn1css,
+            click: function () {
+
+                $("#dialog").dialog('close');
+
+            }
+        }, {
+            text: btn2text,
+                "class": btn2css,
+            click: function () {
+                $("#dialog").dialog('close');
+            }
+        }]
+    });
+}
+
+//	function reload_calendar(){
     $(document).ready(function() {
 //this initializes the calendar
+        var ref = new Firebase("https://crackling-fire-1447.firebaseio.com/trips/");
+        ref.on("child_added", function(snapshot) {
+            var data = snapshot.val();
+            var datakey = snapshot.key();
+//            console.log(data.destination);
+            
+            if ((typeof data.destination != 'undefined'), (typeof data.name != 'undefined'), (typeof data.lastname != 'undefined')){
+                console.log(data.lastname);
+                return;
+            }
+            
+            name = data.name +data.lastname;
+//            destination = this.destination;
+//            start = this.leave;
+//            end = this.back;
+//            contact = this.contactname +this.contactlastname;
+//            econtact = this.contactemail;
 		
         $('#calendar').fullCalendar({
 			theme: true,
@@ -173,17 +246,29 @@ document.getElementById("welcome").innerHTML = "Welcome " + uName;
 				right: 'month,agendaWeek,agendaDay'
 			},
 			defaultDate: '2015-07-12',
-//            selectable: true,
-//            selectHelper: true,
+            selectable: true,
+            selectHelper: true,
 			editable: true,
 			eventLimit: true, // allow "more" link when too many events
+            eventClick: function(calEvent, jsEvent, view){ //View event info onClick
+                ShowDialogBox('Trip Information', 'Name: ' + calEvent.title +'<br/>'+ 'Destination: ' + calEvent.description +'<br/>'+ 'Start :' + calEvent.newstart +'<br/>'+ 'End: ' + calEvent.newend +'<br/>'+ 'Contact: ' + calEvent.contact, 'Ok', '', 'GoToAssetList', null);
+                
+            }
 
-		});
+		})
 		
 	})
-            }
-      reload_calendar();
-		
+            })
+        
+//      reload_calendar();
+
+        $(document).ready(function () {
+    $('#btnTest').click(function () {
+        ShowCustomDialog();
+    });
+});
+
+    
 </script>
     
 <!--------------------------------------Line-Break--------------------------------------------------------------------------------------->
@@ -227,45 +312,81 @@ I'm bored so here's a Dalek:
 </style>
     <script>
 //        This allows the add trip button to create a new event
-            function newEvent() {
-            var newTrip = new Object();
-                console.log('Im Here!')
-
-            newTrip.title = "some text";
-            newTrip.start = '2015-02-22';
-            newTrip.allDay = false;
-            $('#calendar').fullCalendar( 'renderEvent', newTrip );
-                console.log(newTrip);
-            };
+//            function newEvent() {
+//            var newTrip = new Object();
+//                console.log('Im Here!')
+//
+//            newTrip.title = "some text";
+//            newTrip.start = '2015-02-22';
+//            newTrip.allDay = false;
+//            $('#calendar').fullCalendar( 'renderEvent', newTrip );
+//                console.log(newTrip);
+//            };
         
 
         </script>
 <script>
-    
+
+
+  
 function newTripEvent() {
+    
+var ref = new Firebase("https://crackling-fire-1447.firebaseio.com/contacts");
+var countryRef = new Firebase("https://crackling-fire-1447.firebaseio.com/Countries");
+//contacts = sessionStorage.getItem("contacts");
+
+
+    
 //create a form
 var f = document.createElement("form");
 f.setAttribute('method',"post");
 f.setAttribute('action',"submit.php");
 
 //create a contact drop-down
-var i = document.createElement("select");
-i.type = "select";
-i.name = "contact_name";
-i.id = "user_name1";
-i.options.add( new Option("Please Select One") );
-i.options.add( new Option(newTrip.contact) );
+var contactSelect = document.createElement("select");
+contactSelect.type = "select";
+contactSelect.name = "contact_name";
+contactSelect.id = "contact_name1";
+contactSelect.options.add( new Option("Contact") );
+
 
 //create an event type drop-down
 var d = document.createElement("select");
 d.type = "select";
 d.id = "holiday";
 d.name = "holiday";
-d.options.add( new Option("Please Select One") );
-d.options.add( new Option("Holiday") );
-d.options.add( new Option("Maternity") );
-d.options.add( new Option("Meeting") );
+d.options.add( new Option("Event Type") );
+d.options.add( new Option("Business") ); //blue
+d.options.add( new Option("Holiday") ); //orange
+d.options.add( new Option("Maternity") ); //pink
+d.options.add( new Option("Paternity") ); //green
+d.options.add( new Option("External Meeting") ); //red
 
+    
+//create a country drop-down
+var country = document.createElement("select");
+country.type = "select";
+country.id = "countries";
+country.name = "countries";
+country.options.add( new Option("Select destination") );
+    
+
+// create start date drop-down
+var start = document.createElement("input");
+start.type = "text";
+start.id = "startDate";
+start.name = "startDate";
+start.placeholder = "Select Start Date";
+
+    
+    
+// create end date drop-down
+var end = document.createElement("input");
+end.type = "text";
+end.id = "endDate";
+end.name = "endDate";
+end.placeholder = "Select End Date";
+    
 
 //create a button
 var s = document.createElement("input");
@@ -278,16 +399,73 @@ r.type = "reset";
 r.value = "reset";
 
 // add all elements to the form
-f.appendChild(i);
+f.appendChild(contactSelect);
 f.appendChild(d);
+f.appendChild(country);
+f.appendChild(start);
+f.appendChild(end);
 f.appendChild(s);
 f.appendChild(r);
 
 // add the form inside the body
 $("#addTripPlaceholder").append(f);   //using jQuery or
 document.getElementsByTagName('button')[0]; //pure javascript
-};
+ 
+//Grab contacts
+ref.orderByChild("contacts").on("child_added", function(snapshot){
+var contact = snapshot.val();
+//    console.log(contact);
+    
+//Construct option
+var option =  new Option(contact.fullname, snapshot.key())
+    
+//Construct select
+contactSelect.options.add(option);
+});
+    
+    
+//Construct date
+var startdate = $(document).ready(function () {
+$(start).datepicker({dateFormat: "yy-mm-dd", minDate: "getDate"});
+});
+    
+    
+var enddate = $(document).ready(function () {
+$(end).datepicker({dateFormat: "yy-mm-dd", minDate: "getDate+1"});
+});
+    
+//Construct date select
+start = startdate;
+end = enddate;
+    
+//Grab Countries
+countryRef.orderByChild("Countries").on("child_added", function(snapshot){
+var countries = snapshot.val();
+//console.log(countries);
+    
+//Construct Country-Option
+var countryOption = new Option(countries, snapshot.val());
+    
+//Construct Country
+country.options.add(countryOption);
+    
+//        This allows the add trip button to create a new event
+//            function newEvent() {
+//            var newTrip = new Object();
+//                console.log('Im Here!')
+//
+//            newTrip.title = "some text";
+//            newTrip.start = '2015-02-22';
+//            newTrip.allDay = false;
+//            $('#calendar').fullCalendar( 'renderEvent', newTrip );
+//                console.log(newTrip);
+//            }
+    
+})};
+                                
+
 </script>
+    
 <style>
     form select option {
     color: #080808;
@@ -296,7 +474,20 @@ document.getElementsByTagName('button')[0]; //pure javascript
     color: #808080;
     }
 </style>
+    
+<script>
 
+</script>
+    
+<style>
+.showcss {
+display:block;
+}
+.hidecss {
+display:none;
+}
+</style>
+    
 </head>
     
 <!--------------------------------------Line-Break--------------------------------------------------------------------------------------->
@@ -312,10 +503,22 @@ document.getElementsByTagName('button')[0]; //pure javascript
         <option value="working_from_home" id="workign_from_home">Working From Home</option>
     </select>
 -->
+<!--    <input type="button" id="btnTest" value="Test" />-->
+    <div id="dialog" title="Alert message" style="display: none">
+<!--
+        <div class="ui-dialog-content ui-widget-content">
+            <p> <span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0"></span>
+-->
+
+                <label id="lblMessage"></label>
+<!--
+            </p>
+        </div>
+-->
+    </div>
 	<div id='calendar'></div>
 <!--    add trip button-->
-<input class="btn btn-default btn-block" value="Add New Trip" type="submit" id="button" onClick='newTripEvent()'/>
+<input class="btn btn-default btn-block" value="Add New Event" type="submit" id="button" onClick='newTripEvent()'/>
 <div id="addTripPlaceholder"></div>
-
 </body>
 </html>
