@@ -1,46 +1,3 @@
-
-<html>
-<head>
-<!--Initializing JQuery Libraries-->
-<script src="http://code.jquery.com/jquery-1.10.2.js"></script>   
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-<!--<script src="http://code.jquery.com/jquery-2.1.4.js"></script>-->
-<script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-
-
-<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-
-<!--<script src="https://api.jqueryui.com/dialog"></script>-->
-    
-    
-    
-<!--Initializing Calendar Stuff-->
-<meta charset='utf-8' />
-<link rel='stylesheet' href='../lib/cupertino/jquery-ui.min.css' />
-<link href='../fullcalendar.css' rel='stylesheet' />
-<link href='../fullcalendar.print.css' rel='stylesheet' media='print' />
-<script src='../lib/moment.min.js'></script>
-<script src='../fullcalendar.min.js'></script>
-
-    
-<meta name="generator" content="Bootply" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<link href="css/bootstrap.min.css" rel="stylesheet">
-<link href="css/styles.css" rel="stylesheet">
-
-    
-    
-<!--Initializing Firebase Stuff-->
-<script src="https://cdn.firebase.com/js/client/2.0.4/firebase.js"></script>
-<script>var ref = new Firebase("https://crackling-fire-1447.firebaseio.com/trips");</script>
-    
-
-<script src='../lib/dateFormat.js'></script>
-<!--------------------------------------Line-Break--------------------------------------------------------------------------------------->
-    
-   
-<script>
 console.log('Hello')
 
 // Or with an email/password combination
@@ -60,7 +17,7 @@ ref.on('child_added', function(snapshot){
         return;
     }
     
-    console.log(newTrip)
+console.log(newTrip)
     
 //// Create a callback to handle the result of the authentication
 //function authHandler(error, authData) {
@@ -72,8 +29,7 @@ ref.on('child_added', function(snapshot){
 //}
 
 //--------------------------------------Line-Break---------------------------------------------------------------------------------------
-    
-    
+
 //This sets up an empty array that will be filled with the data pulled from Firebase    
 var count = 0;
 var triggered = false;
@@ -91,8 +47,7 @@ trip[count][5] = newTrip.contactlastname;
 trip[count][6] = newTrip.name +" " + newTrip.lastname;
 trip[count][7] = newTrip.contactemail;
 trip[count][8] = newTrip.contactphone;
-     console.log(trip[count][2])
-     
+console.log(trip[count][2])
 
 //  This block of code re-formats the date into a format that the calendar understands, i.e. the American format (...ugh)
     var newEvent = new Object();
@@ -170,7 +125,7 @@ function ShowDialogBox(title, content, btn1text, btn2text, functionText, paramet
     }
     $("#lblMessage").html(content);
 
-    $("#alertbox").dialog({
+    $("#dialog").dialog({
         resizable: false,
         title: title,
         modal: true,
@@ -187,8 +142,14 @@ function ShowDialogBox(title, content, btn1text, btn2text, functionText, paramet
                 "class": btn1css,
             click: function () {
 
-                $("#alertbox").dialog('close');
+                $("#dialog").dialog('close');
 
+            }
+        }, {
+            text: btn2text,
+                "class": btn2css,
+            click: function () {
+                $("#dialog").dialog('close');
             }
         }]
     });
@@ -228,7 +189,7 @@ function ShowDialogBox(title, content, btn1text, btn2text, functionText, paramet
 			editable: true,
 			eventLimit: true, // allow "more" link when too many events
             eventClick: function(calEvent, jsEvent, view){ //View event info onClick
-                ShowDialogBox('Trip Information', '<b>Name:</b> ' + calEvent.title +'<br/>'+ '<b>Destination:</b> ' + calEvent.description +'<br/>'+ '<b>Start:</b> ' + calEvent.newstart +'<br/>'+ '<b>End:</b> ' + calEvent.newend +'<br/>'+ '<b>Contact:</b> ' + calEvent.contact +'<br/>'+ '<b>Contact Email:</b> ' + calEvent.contactemail +'<br/>'+ '<b>Contact Phone:</b> ' + calEvent.contactphone, 'Ok');
+                ShowDialogBox('Trip Information', '<b>Name:</b> ' + calEvent.title +'<br/>'+ '<b>Destination:</b> ' + calEvent.description +'<br/>'+ '<b>Start:</b> ' + calEvent.newstart +'<br/>'+ '<b>End:</b> ' + calEvent.newend +'<br/>'+ '<b>Contact:</b> ' + calEvent.contact +'<br/>'+ '<b>Contact Email:</b> ' + calEvent.contactemail +'<br/>'+ '<b>Contact Phone:</b> ' + calEvent.contactphone, 'Ok', 'Cancel');
                 
             }
 
@@ -243,83 +204,3 @@ function ShowDialogBox(title, content, btn1text, btn2text, functionText, paramet
         ShowCustomDialog();
     });
 });
-
-    
-</script>
-    
-<!--------------------------------------Line-Break--------------------------------------------------------------------------------------->
-<!--
-I'm bored so here's a Dalek:
-                   ____
-                 /  @   \==]|[=(]       E X T E R M I N A T E ! !
-                |--------|
-                ==========       .  *                                     *
-                ==========     .\ * . *.   *                         .    * \  .
-               ||||||||||||      \ * ./  *    .   *                      .  \ \
-              |||||||||| --]%%%%%% .- =--=---=-=-=-=--=-=--=-==-----=-=-=-=-=-=
-              [=========\  ]===========(  *                             . /  /
-             [==============|   / *  \    .                          *  *   /  .
-             C| @ @ @ @ @ @ D         *      *                        *
-              |              \           .                          *  *
-            C| @  @ @  @ @ @  D       .
-             |                 \          *                          *
-           C| @  @  @  @  @  @  D
-            |                    \ 
-          C| @  @  @   @   @   @  D
-           |                       \
-          |@@@@@@@@@@@@@@@@@@@@@@@@@|
-           -------------------------  
--->
-<!--------------------------------------Line-Break--------------------------------------------------------------------------------------->
-<style>
-
-	body {
-		margin: 40px 10px;
-		padding: 0;
-		font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
-		font-size: 14px;
-	}
-
-	#calendar {
-		max-width: 900px;
-		margin: 0 auto;
-	}
-
-</style>
-
-    
-</head>
-    
-<!--------------------------------------Line-Break--------------------------------------------------------------------------------------->
-    
-<body>
-<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#"><img src="img/logo_140x51.png" alt="international alert" style="margin-top: -15px"/></a>
-        </div>
-        <div class="navbar-collapse collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">Add Trip</a></li>
-            <li><a href="#">Calendar View</a></li>
-            <li><a href="#">Map View</a></li>
-          </ul>
-        </div>
-      </div>
-</nav>    
-<br>   
-<h1 id="welcome" style="text-align: center"></h1>
-<div id="alertbox" title="Alert message" style="visibility = visible">
-    <label id="lblMessage"></label>
-</div>
-    <span id="selector"></span>
-    <hr>
-<div id='calendar'></div>
-</body>
-</html>
